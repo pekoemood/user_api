@@ -1,11 +1,11 @@
 class ApplicationController < ActionController::API
+  include ActionController::Cookies
   before_action :authenticate_user!, except: [ :create ]
 
   private
 
   def authenticate_user!
-    header = request.headers["Authorization"]
-    token = header.split(" ").last if header.present?
+    token = cookies[:jwt]
 
     if token
       decoded = JsonWebToken.decode(token)

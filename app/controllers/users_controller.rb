@@ -3,9 +3,15 @@ class UsersController < ApplicationController
     user = User.new(user_params)
     if user.save
       token = JsonWebToken.encode(user_id: user.id)
-      render json: { token: token, user: user }, status: :created
+      cookies[:jwt] = {
+        value: token,
+        httponly: true,
+        secure: true,
+        same_site: :none
+      }
+      render json: { message: "アカウント作成成功" }, status: :ok
     else
-      render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: "無効な認証情報" }, status: :unauthorized
     end
   end
 
